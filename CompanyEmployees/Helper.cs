@@ -130,6 +130,12 @@ namespace CompanyEmployees
         public void RemoveDepartment(Department department)
         {
             if (department == null) return;
+            List<Employee> eml = vEmployee.employees.Where(e => e.DepartmentId == department.Id).ToList<Employee>();
+            for (int i = eml.Count-1; i >= 0; i--)
+            {
+                vEmployee.RemoveEmploee(eml[i]);
+            }
+
             vDepartment.departments.Remove(department);
             FilterEmployees(win.CbDepartment.SelectedItem as Department);
         }
@@ -274,6 +280,11 @@ namespace CompanyEmployees
         /// </summary>
         public void LoadXML()
         {
+            if (!System.IO.File.Exists(Properties.Settings.Default.FileName))
+            {
+                MessageBoxResult msr = MessageBox.Show($"Файл базы данных не найден!\nХотите указать местоположение файла?\n\n{Properties.Settings.Default.FileName}", "", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+                if (msr== MessageBoxResult.Yes) { LoadDB(false); }
+            }
             win.Title = $"XML база данных - {Path.GetFileName(Properties.Settings.Default.FileName)}";
 
             XmlSerializer xmlFormat = new XmlSerializer(typeof(List<Serialize>));
